@@ -5,6 +5,7 @@ import googleFrequency from "../../../static/googleFrequency.json"
 import { Word } from "../random-word/random-word";
 import styles from './random-word-quiz.module.css'
 import classnames from "classnames";
+import { getRandomWords, getWords } from "./random-word-quiz.utils";
 
 interface QuizQuestion {
     quizWord: Word;
@@ -32,9 +33,10 @@ export const RandomWordQuiz = () => {
 
     const getNewQuiz = (): QuizQuestion => {
 
-        const words = Object.entries(dictionaryEnglish).map(([key, value]) => ({ key: key, value: value }) as Word)
+        const filteredWords = getWords(googleFrequency, dictionaryEnglish);
 
-        const filteredWords = words.filter(word => word.key in googleFrequency)
+        //const words = Object.entries(dictionaryEnglish).map(([key, value]) => ({ key: key, value: value }) as Word)
+        //const filteredWords = words.filter(word => word.key in googleFrequency)
 
         // descriptions with 1 dot and is a common word --> 9:ish words
         //const filteredWords = words.filter(word => {
@@ -59,14 +61,7 @@ export const RandomWordQuiz = () => {
         }
     }
 
-    const getRandomWords = (nrWords: number, words: Word[]) => {
-        const randomWords: Word[] = [];
-        for (let i = 0, nr = nrWords; i < nr; i++) {
-            let word = words[Math.floor(Math.random() * words.length)];
-            randomWords.push(word)
-        }
-        return randomWords;
-    }
+
 
     const handleClick = (word: Word) => {
         setHistory([{ ...currentQuiz, answer: word } as QuizQuestion, ...history])
@@ -81,13 +76,6 @@ export const RandomWordQuiz = () => {
         }
     }
 
-    const getShortAnswer = (word: Word) => {
-        const maxDescLength = 200;
-        const isLong = word.value.length > maxDescLength;
-        return isLong ? `${word.value.substring(0, maxDescLength)}...` : word.value;
-
-    }
-
     return <>
         <div className={styles.score}>
             <div>quiz</div>
@@ -99,7 +87,7 @@ export const RandomWordQuiz = () => {
                 <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
             </div>
             <div className={styles.options}>
-                {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={styles.answer} onClick={() => handleClick(word)}>{getShortAnswer(word)}</div>)}
+                {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={classnames(styles.answer, styles.wordDescription)} onClick={() => handleClick(word)}>{word.value}</div>)}
             </div>
         </div>
 
@@ -116,7 +104,7 @@ export const RandomWordQuiz = () => {
                                 [styles.historyCorrectAnswer]: word.key === currentQuiz.quizWord.key,
                                 [styles.historyWrongAnswer]: word.key === currentQuiz.answer?.key && word.key !== currentQuiz.quizWord.key
                             })
-                            return <div key={word.key} className={classes}>{getShortAnswer(word)}</div>
+                            return <div key={word.key} className={classes}><div className={styles.wordDescription}>{word.value}</div><div>{word.key}</div></div>
                         })}
                     </div>
                 </div>)

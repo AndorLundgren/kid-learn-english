@@ -16,6 +16,7 @@
 
 .options {
     width: 100%;
+    overflow: hidden;
 }
 
 .word {
@@ -25,7 +26,15 @@
 
 .answer {
     cursor: pointer;
-    justify-content: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.wordDescription {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 .answer:hover {
