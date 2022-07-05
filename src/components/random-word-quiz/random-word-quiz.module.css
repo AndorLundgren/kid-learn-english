@@ -1,0 +1,53 @@
+.question,
+.answer {
+    padding: 2rem;
+    border: 1px solid black;
+    display: flex;
+    flex: 1;
+    align-content: center;
+    justify-content: center;
+    margin: 1rem;
+    box-shadow: 2px 2px 2px #ccc;
+}
+
+.question {
+    justify-content: flex-start;
+}
+
+.options {
+    width: 100%;
+}
+
+.word {
+    width: 200px;
+    flex-grow: 0;
+}
+
+.answer {
+    cursor: pointer;
+    justify-content: flex-start;
+}
+
+.answer:hover {
+    background-color: #cecece;
+}
+
+.score {
+    display: flex;
+    flex-direction: row;
+    font-size: 24px;
+}
+
+.userCorrectAnswer {
+    color: green;
+    display: inline-flex;
+    margin: 0 2rem;
+    padding: 0 2rem;
+}
+
+.userWrongAnswer {
+    color: red;
+    display: inline-flex;
+    margin: 0 2rem;
+    padding: 0 2rem;
+}
