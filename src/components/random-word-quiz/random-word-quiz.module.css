@@ -1,6 +1,6 @@
 .question,
 .answer {
-    padding: 2rem;
+    padding: 1rem 2rem;
     border: 1px solid black;
     display: flex;
     flex: 1;
@@ -33,6 +33,7 @@
 }
 
 .score {
+    padding-left: 2rem;
     display: flex;
     flex-direction: row;
     font-size: 24px;
@@ -50,4 +51,17 @@
     display: inline-flex;
     margin: 0 2rem;
     padding: 0 2rem;
+}
+
+
+.historyCorrectAnswer {
+    color: green;
+    background-color: #cecece;
+    border-color: green;
+}
+
+.historyWrongAnswer {
+    color: palevioletred;
+    background-color: #cecece;
+    border-color: palevioletred;
 }

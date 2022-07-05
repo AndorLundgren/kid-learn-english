@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import dictionaryEnglish from '../../../static/dictionary_eng.json';
 import commonWords from "../../../static/common.json";
+import googleFrequency from "../../../static/googleFrequency.json"
 import { Word } from "../random-word/random-word";
 import styles from './random-word-quiz.module.css'
+import classnames from "classnames";
 
 interface QuizQuestion {
     quizWord: Word;
@@ -32,12 +34,15 @@ export const RandomWordQuiz = () => {
 
         const words = Object.entries(dictionaryEnglish).map(([key, value]) => ({ key: key, value: value }) as Word)
 
+        const filteredWords = words.filter(word => word.key in googleFrequency)
 
-        const filteredWords = words.filter(word => {
-            const nrDots = (word.value.match(/\./g) || []).length;
-            return nrDots <= 2 && commonWords.commonWords.indexOf(word.key) !== -1
-        }
-        )
+        // descriptions with 1 dot and is a common word --> 9:ish words
+        //const filteredWords = words.filter(word => {
+        //    const nrDots = (word.value.match(/\./g) || []).length;
+        //    return nrDots <= 2 && commonWords.commonWords.indexOf(word.key) !== -1
+        //})
+
+        // description with 1 dot --> really strange words
         // const filteredWords = words.filter(word => {
         //     const nrDots = (word.value.match(/\./g) || []).length;
         //     return nrDots <= 1;// && nrDots > 0;
@@ -64,7 +69,7 @@ export const RandomWordQuiz = () => {
     }
 
     const handleClick = (word: Word) => {
-        setHistory([...history, { ...currentQuiz, answer: word } as QuizQuestion])
+        setHistory([{ ...currentQuiz, answer: word } as QuizQuestion, ...history])
     }
 
     const score = () => {
@@ -76,20 +81,46 @@ export const RandomWordQuiz = () => {
         }
     }
 
+    const getShortAnswer = (word: Word) => {
+        const maxDescLength = 200;
+        const isLong = word.value.length > maxDescLength;
+        return isLong ? `${word.value.substring(0, maxDescLength)}...` : word.value;
+
+    }
+
     return <>
-        <h2>quiz</h2>
+        <div className={styles.score}>
+            <div>quiz</div>
+            <div className={styles.userCorrectAnswer}>{score().correct}</div>
+            <div className={styles.userWrongAnswer}>{score().wrong}</div>
+        </div>
         <div className={styles.question}>
             <div className={styles.word}>
                 <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
             </div>
             <div className={styles.options}>
-                {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={styles.answer} onClick={() => handleClick(word)}>{word.value}</div>)}
+                {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={styles.answer} onClick={() => handleClick(word)}>{getShortAnswer(word)}</div>)}
             </div>
         </div>
-        <h2>Score</h2>
-        <div className={styles.score}>
-            <div className={styles.userCorrectAnswer}>{score().correct}</div>
-            <div className={styles.userWrongAnswer}>{score().wrong}</div>
-        </div>
+
+        <h2>History</h2>
+        {history.map(currentQuiz => {
+            return (
+                <div className={styles.question}>
+                    <div className={styles.word}>
+                        <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
+                    </div>
+                    <div className={styles.options}>
+                        {currentQuiz?.optionOrder.map(word => {
+                            const classes = classnames(styles.answer, {
+                                [styles.historyCorrectAnswer]: word.key === currentQuiz.quizWord.key,
+                                [styles.historyWrongAnswer]: word.key === currentQuiz.answer?.key && word.key !== currentQuiz.quizWord.key
+                            })
+                            return <div key={word.key} className={classes}>{getShortAnswer(word)}</div>
+                        })}
+                    </div>
+                </div>)
+        })}
+
     </>
 }
