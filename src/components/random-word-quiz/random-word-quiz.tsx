@@ -1,13 +1,8 @@
-import { useEffect, useState } from "react";
-import dictionaryEnglish from '../../../static/dictionary_eng.json';
-import commonWords from "../../../static/common.json";
-import kidWords from "../../../static/kid_words_eng.json"
-import googleFrequency from "../../../static/googleFrequency.json"
-import ownDictionary from "../../../static/own_kid_dictionary_eng_swe.json"
+import { useCallback, useEffect, useState } from "react";
 import { Word } from "../random-word/random-word";
 import styles from './random-word-quiz.module.css'
 import classnames from "classnames";
-import { getRandomWords, getUniqueWords, getWords } from "./random-word-quiz.utils";
+import { getUniqueWords, getWords } from "./random-word-quiz.utils";
 
 interface QuizQuestion {
     quizWord: Word;
@@ -15,7 +10,6 @@ interface QuizQuestion {
     optionOrder: Word[];
     answer?: Word;
 }
-
 
 export const RandomWordQuiz = () => {
     const [currentQuiz, setCurrentQuiz] = useState<QuizQuestion>();
@@ -29,16 +23,9 @@ export const RandomWordQuiz = () => {
         }
     }
 
-    useEffect(() => {
-        setCurrentQuiz(getNewQuiz())
-    }, [history.length])
-
-    const getNewQuiz = (): QuizQuestion => {
-
+    const getNewQuizCallback = useCallback(() => {
         const filteredWords = getWords("Own_Own");
-
         const word = filteredWords[Math.floor(Math.random() * filteredWords.length)];
-
         const wrongWords: Word[] = getUniqueWords(nrWrongWords, filteredWords, [word]);
         const allAnswers: Word[] = [...wrongWords, word];
         shuffleArray(allAnswers)
@@ -47,7 +34,28 @@ export const RandomWordQuiz = () => {
             wrongWords: wrongWords,
             optionOrder: allAnswers
         }
-    }
+    }, [nrWrongWords])
+
+    // const getNewQuiz = (): QuizQuestion => {
+    //     const filteredWords = getWords("Own_Own");
+    //     const word = filteredWords[Math.floor(Math.random() * filteredWords.length)];
+    //     const wrongWords: Word[] = getUniqueWords(nrWrongWords, filteredWords, [word]);
+    //     const allAnswers: Word[] = [...wrongWords, word];
+    //     shuffleArray(allAnswers)
+    //     return {
+    //         quizWord: word,
+    //         wrongWords: wrongWords,
+    //         optionOrder: allAnswers
+    //     }
+    // }
+    // useEffect(() => {
+    //     setCurrentQuiz(getNewQuiz())
+    // }, [history.length])
+
+
+    useEffect(() => {
+        setCurrentQuiz(getNewQuizCallback())
+    }, [history.length, getNewQuizCallback])
 
     const handleClick = (word: Word) => {
         setHistory([{ ...currentQuiz, answer: word } as QuizQuestion, ...history])
@@ -62,7 +70,7 @@ export const RandomWordQuiz = () => {
         }
     }
 
-    return <>
+    return <div className={styles.wrapper}>
         <div className={styles.score}>
             <div>quiz</div>
             <div className={styles.userCorrectAnswer}>{score().correct}</div>
@@ -77,24 +85,25 @@ export const RandomWordQuiz = () => {
             </div>
         </div>
 
-        <h2>History</h2>
-        {history.map(currentQuiz => {
-            return (
-                <div className={styles.question}>
-                    <div className={styles.word}>
-                        <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
-                    </div>
-                    <div className={styles.options}>
-                        {currentQuiz?.optionOrder.map(word => {
-                            const classes = classnames(styles.answer, {
-                                [styles.historyCorrectAnswer]: word.key === currentQuiz.quizWord.key,
-                                [styles.historyWrongAnswer]: word.key === currentQuiz.answer?.key && word.key !== currentQuiz.quizWord.key
-                            })
-                            return <div key={word.key} className={classes}><div className={styles.wordDescription}>{word.value}</div><div>{word.key}</div></div>
-                        })}
-                    </div>
-                </div>)
-        })}
-
-    </>
+        <div className={styles.history}>
+            <h2>History</h2>
+            {history.map((currentQuiz, index) => {
+                return (
+                    <div key={index} className={styles.question}>
+                        <div className={styles.word}>
+                            <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
+                        </div>
+                        <div className={styles.options}>
+                            {currentQuiz?.optionOrder.map(word => {
+                                const classes = classnames(styles.answer, {
+                                    [styles.historyCorrectAnswer]: word.key === currentQuiz.quizWord.key,
+                                    [styles.historyWrongAnswer]: word.key === currentQuiz.answer?.key && word.key !== currentQuiz.quizWord.key
+                                })
+                                return <div key={word.key} className={classes}><div className={styles.wordDescription}>{word.value}</div><div>{word.key}</div></div>
+                            })}
+                        </div>
+                    </div>)
+            })}
+        </div>
+    </div>
 }

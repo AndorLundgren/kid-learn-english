@@ -1,3 +1,7 @@
+.wrapper {
+    margin: 1rem;
+}
+
 .question,
 .answer {
     padding: 1rem 2rem;
@@ -6,7 +10,8 @@
     flex: 1;
     align-content: center;
     justify-content: center;
-    margin: 1rem;
+    margin: 1rem 0;
+    gap: 1rem;
     box-shadow: 2px 2px 2px #ccc;
 }
 
@@ -42,7 +47,9 @@
 }
 
 .score {
-    padding-left: 2rem;
+    border: 1px solid black;
+    margin: 1rem 0;
+    padding: 1rem 2rem;
     display: flex;
     flex-direction: row;
     font-size: 24px;
@@ -61,7 +68,6 @@
     margin: 0 2rem;
     padding: 0 2rem;
 }
-
 
 .historyCorrectAnswer {
     color: green;
