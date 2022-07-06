@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import dictionaryEnglish from '../../../static/dictionary_eng.json';
 import commonWords from "../../../static/common.json";
+import kidWords from "../../../static/kid_words_eng.json"
 import googleFrequency from "../../../static/googleFrequency.json"
+import ownDictionary from "../../../static/own_kid_dictionary_eng_swe.json"
 import { Word } from "../random-word/random-word";
 import styles from './random-word-quiz.module.css'
 import classnames from "classnames";
-import { getRandomWords, getWords } from "./random-word-quiz.utils";
+import { getRandomWords, getUniqueWords, getWords } from "./random-word-quiz.utils";
 
 interface QuizQuestion {
     quizWord: Word;
@@ -33,25 +35,11 @@ export const RandomWordQuiz = () => {
 
     const getNewQuiz = (): QuizQuestion => {
 
-        const filteredWords = getWords(googleFrequency, dictionaryEnglish);
+        const filteredWords = getWords("Own_Own");
 
-        //const words = Object.entries(dictionaryEnglish).map(([key, value]) => ({ key: key, value: value }) as Word)
-        //const filteredWords = words.filter(word => word.key in googleFrequency)
-
-        // descriptions with 1 dot and is a common word --> 9:ish words
-        //const filteredWords = words.filter(word => {
-        //    const nrDots = (word.value.match(/\./g) || []).length;
-        //    return nrDots <= 2 && commonWords.commonWords.indexOf(word.key) !== -1
-        //})
-
-        // description with 1 dot --> really strange words
-        // const filteredWords = words.filter(word => {
-        //     const nrDots = (word.value.match(/\./g) || []).length;
-        //     return nrDots <= 1;// && nrDots > 0;
-        // })
         const word = filteredWords[Math.floor(Math.random() * filteredWords.length)];
 
-        const wrongWords: Word[] = getRandomWords(nrWrongWords, filteredWords);
+        const wrongWords: Word[] = getUniqueWords(nrWrongWords, filteredWords, [word]);
         const allAnswers: Word[] = [...wrongWords, word];
         shuffleArray(allAnswers)
         return {
@@ -60,8 +48,6 @@ export const RandomWordQuiz = () => {
             optionOrder: allAnswers
         }
     }
-
-
 
     const handleClick = (word: Word) => {
         setHistory([{ ...currentQuiz, answer: word } as QuizQuestion, ...history])
