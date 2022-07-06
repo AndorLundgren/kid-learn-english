@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Word } from "../random-word/random-word";
 import styles from './random-word-quiz.module.css'
 import classnames from "classnames";
-import { getUniqueWords, getWords } from "./random-word-quiz.utils";
+import { getUniqueWords, getWords, QuizWordsTypes } from "./random-word-quiz.utils";
 
 interface QuizQuestion {
     quizWord: Word;
@@ -14,6 +14,7 @@ interface QuizQuestion {
 export const RandomWordQuiz = () => {
     const [currentQuiz, setCurrentQuiz] = useState<QuizQuestion>();
     const [history, setHistory] = useState<QuizQuestion[]>([]);
+    const [wordType, setWordType] = useState<QuizWordsTypes>("Own_Own")
     const nrWrongWords = 3;
 
     const shuffleArray = (array: Word[]) => {
@@ -24,7 +25,7 @@ export const RandomWordQuiz = () => {
     }
 
     const getNewQuizCallback = useCallback(() => {
-        const filteredWords = getWords("Own_Own");
+        const filteredWords = getWords(wordType);
         const word = filteredWords[Math.floor(Math.random() * filteredWords.length)];
         const wrongWords: Word[] = getUniqueWords(nrWrongWords, filteredWords, [word]);
         const allAnswers: Word[] = [...wrongWords, word];
@@ -34,24 +35,7 @@ export const RandomWordQuiz = () => {
             wrongWords: wrongWords,
             optionOrder: allAnswers
         }
-    }, [nrWrongWords])
-
-    // const getNewQuiz = (): QuizQuestion => {
-    //     const filteredWords = getWords("Own_Own");
-    //     const word = filteredWords[Math.floor(Math.random() * filteredWords.length)];
-    //     const wrongWords: Word[] = getUniqueWords(nrWrongWords, filteredWords, [word]);
-    //     const allAnswers: Word[] = [...wrongWords, word];
-    //     shuffleArray(allAnswers)
-    //     return {
-    //         quizWord: word,
-    //         wrongWords: wrongWords,
-    //         optionOrder: allAnswers
-    //     }
-    // }
-    // useEffect(() => {
-    //     setCurrentQuiz(getNewQuiz())
-    // }, [history.length])
-
+    }, [nrWrongWords, wordType])
 
     useEffect(() => {
         setCurrentQuiz(getNewQuizCallback())
@@ -75,6 +59,13 @@ export const RandomWordQuiz = () => {
             <div>quiz</div>
             <div className={styles.userCorrectAnswer}>{score().correct}</div>
             <div className={styles.userWrongAnswer}>{score().wrong}</div>
+            <select onChange={e => setWordType(e.target.value as QuizWordsTypes)}>
+                <option value="Own_Own">100 eng swe (simple)</option>
+                <option value="Own_SweEng">100 swe eng (simple)</option>
+                <option value="Webster_Webster">Webster</option>
+                <option value="5000_EngSwe">5000 eng swe</option>
+                <option value="5000_SweEng">5000 swe eng</option>
+            </select>
         </div>
         <div className={styles.question}>
             <div className={styles.word}>
