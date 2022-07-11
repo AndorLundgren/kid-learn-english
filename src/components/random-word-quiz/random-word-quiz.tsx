@@ -55,24 +55,39 @@ export const RandomWordQuiz = () => {
     }
 
     return <div className={styles.wrapper}>
-        <div className={styles.score}>
-            <div>quiz</div>
-            <div className={styles.userCorrectAnswer}>{score().correct}</div>
-            <div className={styles.userWrongAnswer}>{score().wrong}</div>
-            <select onChange={e => setWordType(e.target.value as QuizWordsTypes)}>
-                <option value="Own_Own">100 eng swe (simple)</option>
-                <option value="Own_SweEng">100 swe eng (simple)</option>
-                <option value="Webster_Webster">Webster</option>
-                <option value="5000_EngSwe">5000 eng swe</option>
-                <option value="5000_SweEng">5000 swe eng</option>
-            </select>
-        </div>
-        <div className={styles.question}>
-            <div className={styles.word}>
-                <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
+        <div className={styles.header}>
+            <div className={styles.score}>
+                <h2>Score</h2>
+                <table className={styles.scoreTable}>
+                    <thead><tr><th>Correct</th><th>Not correct</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><div className={styles.userCorrectAnswer}>{score().correct}</div></td>
+                            <td><div className={styles.userWrongAnswer}>{score().wrong}</div></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div className={styles.options}>
-                {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={classnames(styles.answer, styles.wordDescription)} onClick={() => handleClick(word)}>{word.value}</div>)}
+            <div className={styles.settings}>
+                <h2>Options</h2>
+                <select className={styles.dictionaryTypeSelect} onChange={e => setWordType(e.target.value as QuizWordsTypes)}>
+                    <option value="Own_Own">100 eng swe (simple)</option>
+                    <option value="Own_SweEng">100 swe eng (simple)</option>
+                    <option value="Webster_Webster">Webster</option>
+                    <option value="5000_EngSwe">5000 eng swe</option>
+                    <option value="5000_SweEng">5000 swe eng</option>
+                </select>
+            </div>
+        </div>
+        <div className={styles.questionSection}>
+            <h2>Question</h2>
+            <div className={styles.question}>
+                <div className={styles.word}>
+                    <div className={styles.question}>{currentQuiz?.quizWord.key}</div>
+                </div>
+                <div className={styles.options}>
+                    {currentQuiz?.optionOrder.map((word, index) => <div key={index} className={classnames(styles.answer, styles.wordDescription)} onClick={() => handleClick(word)}>{word.value}</div>)}
+                </div>
             </div>
         </div>
 
